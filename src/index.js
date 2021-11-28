@@ -1,17 +1,32 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import LoginPage from "./LoginPage";
+import MainPage from "./MainPage";
+import Context from "./UserContext";
+import "./index.css";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+class Root extends React.Component {
+  state = {
+    currentUser: null
+  };
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+  handleLogin = (user) => {
+    this.setState({ currentUser: user });
+  };
+
+  handleLogout = () => {
+    this.setState({ currentUser: null });
+  };
+
+  render() {
+    return this.state.currentUser ? (
+      <Context.Provider value={this.state.currentUser}>
+        <MainPage onLogout={this.handleLogout} />
+      </Context.Provider>
+    ) : (
+      <LoginPage onLogin={this.handleLogin} />
+    );
+  }
+}
+
+ReactDOM.render(<Root />, document.querySelector("#root"));
