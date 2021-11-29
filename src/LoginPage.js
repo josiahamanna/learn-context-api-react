@@ -1,60 +1,65 @@
-import React from 'react';
-import { login } from './api';
+import React from "react";
+import { login } from "./api";
+import { UserConsumer } from "./UserContext";
 
 class LoginPage extends React.Component {
   state = {
     error: null,
     loading: false,
-    username: '',
-    password: ''
+    username: "",
+    password: ""
   };
 
-  handleInputChange = e => {
+  handleInputChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value
     });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e, onLogin) => {
     e.preventDefault();
     this.setState({ loading: true, error: null });
     login(this.state.username, this.state.password)
-      .then(user => {
+      .then((user) => {
         this.setState({ loading: false });
-        this.props.onLogin(user);
+        onLogin(user);
       })
-      .catch(error => this.setState({ error, loading: false }));
+      .catch((error) => this.setState({ error, loading: false }));
   };
 
   render() {
     const { username, password, error, loading } = this.state;
 
     return (
-      <div className="LoginPage">
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Username
-            <input
-              name="username"
-              value={username}
-              onChange={this.handleInputChange}
-            />
-          </label>
-          <label>
-            Password
-            <input
-              name="password"
-              type="password"
-              value={password}
-              onChange={this.handleInputChange}
-            />
-          </label>
-          {error && <div className="error">{error.message}</div>}
-          <button type="submit" disabled={loading}>
-            Sign In
-          </button>
-        </form>
-      </div>
+      <UserConsumer>
+        {({ onLogin }) => (
+          <div className="LoginPage">
+            <form onSubmit={(e) => this.handleSubmit(e, onLogin)}>
+              <label>
+                Username
+                <input
+                  name="username"
+                  value={username}
+                  onChange={this.handleInputChange}
+                />
+              </label>
+              <label>
+                Password
+                <input
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={this.handleInputChange}
+                />
+              </label>
+              {error && <div className="error">{error.message}</div>}
+              <button type="submit" disabled={loading}>
+                Sign In
+              </button>
+            </form>
+          </div>
+        )}
+      </UserConsumer>
     );
   }
 }

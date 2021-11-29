@@ -2,31 +2,22 @@ import React from "react";
 import ReactDOM from "react-dom";
 import LoginPage from "./LoginPage";
 import MainPage from "./MainPage";
-import Context from "./UserContext";
+import { UserProvider, UserConsumer } from "./UserContext";
 import "./index.css";
 
 class Root extends React.Component {
-  state = {
-    currentUser: null
-  };
-
-  handleLogin = (user) => {
-    this.setState({ currentUser: user });
-  };
-
-  handleLogout = () => {
-    this.setState({ currentUser: null });
-  };
-
   render() {
-    return this.state.currentUser ? (
-      <Context.Provider value={this.state.currentUser}>
-        <MainPage onLogout={this.handleLogout} />
-      </Context.Provider>
-    ) : (
-      <LoginPage onLogin={this.handleLogin} />
+    return (
+      <UserConsumer>
+        {({ user }) => (user ? <MainPage /> : <LoginPage />)}
+      </UserConsumer>
     );
   }
 }
 
-ReactDOM.render(<Root />, document.querySelector("#root"));
+ReactDOM.render(
+  <UserProvider>
+    <Root />
+  </UserProvider>,
+  document.querySelector("#root")
+);
